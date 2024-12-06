@@ -53,9 +53,13 @@ public class hsDao {
                 stmt.setString(2, hs.getIdLop());
                 stmt.setString(3, hs.getDiachi());
                 stmt.setString(4, hs.getNamnhaphoc());
-                stmt.setBoolean(5, hs.isLanam());
+                stmt.setBoolean(5, (hs.isLanam()));
                 stmt.setBoolean(6, hs.isDangtheohoc());
-                stmt.setString(7, hs.getNgaysinh().toString());
+                if (hs.getNgaysinh() != null) {
+                    Date date = Date.valueOf(hs.getNgaysinh());
+                    stmt.setDate(7, date);
+                }
+
                 stmt.setString(8, hs.getNoisinh());
                 int i = stmt.executeUpdate();
                 if (i == 1) {

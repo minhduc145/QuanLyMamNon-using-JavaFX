@@ -9,10 +9,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.SingleSelectionModel;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
@@ -28,7 +25,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class ThemLop extends Stage implements Initializable {
-    public static Boolean result = true;
+    private Dialog<ButtonType> dialog;
+    public void setDialog(Dialog<ButtonType> dialog) {
+        this.dialog = dialog;
+    }
     @FXML
     AnchorPane ap;
     @FXML
@@ -95,9 +95,7 @@ public class ThemLop extends Stage implements Initializable {
             }
         });
 
-        this.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, event -> {
-            System.out.println("Form đang đóng");
-        });
+
     }
 
     /**********chon2************/
@@ -138,6 +136,8 @@ public class ThemLop extends Stage implements Initializable {
             return;
         }
         AlertMessage.infoBox("Đã thêm thành công lớp mới", null);
+        dialog.setResult(ButtonType.OK);
+        dialog.close();
     }
 
 

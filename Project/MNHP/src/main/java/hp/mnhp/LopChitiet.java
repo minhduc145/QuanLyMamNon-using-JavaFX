@@ -34,9 +34,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class LopChitiet implements Initializable {
     Integer i = null;
@@ -372,17 +370,24 @@ public class LopChitiet implements Initializable {
             @Override
             public void handle(javafx.scene.input.MouseEvent event) {
                 try {
-                    Parent root = FXMLLoader.load(getClass().getResource("themLop.fxml"));
-                    Stage stage = new Stage();
-                    stage.setTitle("Thêm Lớp");
-                    stage.setScene(new Scene(root));
-                    stage.setResizable(false);
-                    stage.initModality(Modality.APPLICATION_MODAL);
-//                    stage.getScene().getStylesheets().add(new CupertinoLight().getUserAgentStylesheet());
-                    stage.showAndWait();
-                    if(ThemLop.result == true){
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("themLop.fxml"));
+                    Parent root = loader.load();
+                    Dialog<ButtonType> dialog = new Dialog<>();
+                    dialog.getDialogPane().setContent(root);
+                    dialog.setTitle("Thêm Lớp");
+                    dialog.setResizable(false);
+                    dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+                    dialog.initModality(Modality.APPLICATION_MODAL);
+                    dialog.getDialogPane().getStylesheets().add(new CupertinoLight().getUserAgentStylesheet());
+                    ((ThemLop) loader.getController()).setDialog(dialog);
+                    Optional<ButtonType> rs = dialog.showAndWait();
+                    if (rs.isPresent() && rs.get() == ButtonType.OK) {
+                        System.out.println("Người dùng đã chọn OK.");
                         setReload();
+                    } else {
+                        System.out.println("Người dùng đã chọn Cancel hoặc đóng dialog.");
                     }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

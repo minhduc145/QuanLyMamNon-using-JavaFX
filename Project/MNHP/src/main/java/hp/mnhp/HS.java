@@ -73,8 +73,9 @@ public class HS implements Initializable {
             Dialog<ButtonType> dialog = new Dialog<>();
             dialog.getDialogPane().setContent(root);
             dialog.getDialogPane().getStylesheets().add(new CupertinoLight().getUserAgentStylesheet());
-            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-            BangTTHS ctrl = loader.getController();
+            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
+            BangTTHS controller = (BangTTHS) loader.getController();
+            controller.setDialog(dialog);
             Optional<ButtonType> result = dialog.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 System.out.println("Người dùng đã chọn OK.");
