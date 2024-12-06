@@ -1,7 +1,8 @@
 Manifest-Version: 1.0
 Main-Class: hp.mnhp.run
-Class-Path: mssql-jdbc-12.6.1.jre11.jar javafx-graphics-21.jar javafx-ba
- se-21-win.jar javafx-controls-21.jar javafx-base-21.jar javafx-fxml-21.
- jar javafx-graphics-21-win.jar atlantafx-base-2.0.1.jar javafx-fxml-21-
- win.jar javafx-controls-21-win.jar
+Class-Path: javafx-fxml-21.jar ikonli-core-12.3.1.jar atlantafx-base-2.0
+ .1.jar commons-io-2.16.1.jar javafx-controls-21-win.jar javafx-controls
+ -21.jar javafx-base-21-win.jar ikonli-javafx-12.3.1.jar javafx-graphics
+ -21.jar javafx-graphics-21-win.jar javafx-base-21.jar mssql-jdbc-12.6.1
+ .jre11.jar bootstrapfx-core-0.4.0.jar javafx-fxml-21-win.jar
 

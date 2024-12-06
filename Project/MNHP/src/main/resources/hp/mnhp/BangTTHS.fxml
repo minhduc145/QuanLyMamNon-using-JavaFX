@@ -191,12 +191,12 @@
                                         <ComboBox fx:id="tt" prefHeight="36.0" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     </children>
                                 </GridPane>
-                                <Button fx:id="luuBtn" defaultButton="true" layoutX="940.0" layoutY="68.0" mnemonicParsing="false" text="Lưu" AnchorPane.rightAnchor="20.799999999999997" />
                                 <Text layoutX="417.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" text="THÊM HỌC SINH:" AnchorPane.bottomAnchor="628.18046875" AnchorPane.leftAnchor="417.0" AnchorPane.rightAnchor="428.185546875" AnchorPane.topAnchor="0.41796875">
                                     <font>
                                         <Font size="20.0" />
                                     </font>
                                 </Text>
+                        <Button fx:id="luuBtn" defaultButton="true" layoutX="857.0" layoutY="95.0" mnemonicParsing="false" text="Lưu" />
                             </children>
                         </AnchorPane>
                     </center>

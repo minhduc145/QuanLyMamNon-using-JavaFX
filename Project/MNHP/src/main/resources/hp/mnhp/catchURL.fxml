@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="236.0" prefWidth="404.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hp.mnhp.CatchURL">
+   <children>
+      <TextField fx:id="txt1" layoutX="82.0" layoutY="77.0" prefHeight="26.0" prefWidth="240.0" text="username=sa;password=123" />
+      <Button fx:id="btn1" layoutX="176.0" layoutY="158.0" mnemonicParsing="false" onAction="#onBtn" text="Button" />
+   </children>
+</AnchorPane>

@@ -26,13 +26,13 @@
                         <Font name="Tahoma" size="20.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="login_username" layoutX="39.0" layoutY="239.0" prefHeight="30.0" prefWidth="250.0" promptText="Username">
+                  <TextField fx:id="login_username" layoutX="39.0" layoutY="239.0" prefHeight="30.0" prefWidth="250.0" promptText="Username" text="ht1">
                      <styleClass>
                         <String fx:value="textfield-1" />
                         <String fx:value="white-bg" />
                      </styleClass>
                   </TextField>
-                  <PasswordField fx:id="login_password" layoutX="39.0" layoutY="328.0" prefHeight="30.0" prefWidth="250.0" promptText="Password">
+                  <PasswordField fx:id="login_password" layoutX="39.0" layoutY="328.0" prefHeight="30.0" prefWidth="250.0" promptText="Password" text="123">
                      <styleClass>
                         <String fx:value="textfield-1" />
                         <String fx:value="white-bg" />

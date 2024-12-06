@@ -102,10 +102,11 @@
                                                    <children>
                                                       <TableView fx:id="gvtab" layoutX="156.0" layoutY="86.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                                                         <columns>
-                                                          <TableColumn fx:id="sttgv" prefWidth="75.0" text="STT" />
-                                                          <TableColumn fx:id="htgv" prefWidth="246.39999389648438" text="Họ Tên" />
-                                                            <TableColumn fx:id="tkgv" prefWidth="158.4000244140625" text="Tài khoản" />
-                                                            <TableColumn fx:id="nsgv" prefWidth="191.2000732421875" text="Ngày sinh" />
+                                                          <TableColumn fx:id="sttgv" prefWidth="52.80000001192093" text="STT" />
+                                                          <TableColumn fx:id="htgv" prefWidth="200.00007247924805" text="Họ Tên" />
+                                                            <TableColumn fx:id="tkgv" prefWidth="146.40003967285156" text="ID/Tài khoản" />
+                                                            <TableColumn fx:id="nsgv" prefWidth="175.20001220703125" text="Ngày sinh" />
+                                                            <TableColumn fx:id="gvch" prefWidth="175.20001220703125" sortable="false" text="Chọn" visible="false" />
                                                         </columns>
                                                       </TableView>
                                                    </children></AnchorPane>
@@ -140,6 +141,8 @@
                                     <Button fx:id="delfromclass" layoutX="619.0" layoutY="515.0" mnemonicParsing="false" text="Xóa khỏi DS" visible="false" AnchorPane.bottomAnchor="6.399999999999977" />
                                     <Button fx:id="addtoclass" layoutX="15.0" layoutY="515.0" mnemonicParsing="false" text="Thêm HS vào" visible="false" AnchorPane.bottomAnchor="6.600000000000023" />
                                     <Button fx:id="chs" disable="true" layoutX="342.0" layoutY="515.0" mnemonicParsing="false" text="Chuyển HS" AnchorPane.bottomAnchor="6.399999999999977" />
+                                    <Button fx:id="btnOK" defaultButton="true" layoutX="652.0" layoutY="515.0" mnemonicParsing="false" onAction="#onclickOKbtn" text="Lưu lại" visible="false" AnchorPane.bottomAnchor="6.600000000000023" AnchorPane.rightAnchor="23.19999999999996" />
+                                    <Button fx:id="btnMoThem" disable="true" layoutX="32.0" layoutY="41.0" mnemonicParsing="false" onAction="#onclickMoThem" style="-fx-background-color: coral;" text="Thêm GVCN" textFill="WHITE" />
                                  </children>
                               </AnchorPane>
                            </items>

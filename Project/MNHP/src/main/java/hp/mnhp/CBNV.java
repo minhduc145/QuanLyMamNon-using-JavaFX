@@ -23,37 +23,29 @@ import javafx.scene.control.skin.ListViewSkin;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 import org.apache.commons.io.FileUtils;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.List;
 
 public class CBNV implements Initializable {
     linhtinhDao linhtinh = new linhtinhDao();
     CBNVDao cbdao = new CBNVDao();
-    List<CBNVModule> ds = new ArrayList<>();
+    List<NhanVien> ds = new ArrayList<>();
     List<String> link = new ArrayList<>();
     int lastIndex;
 
     @FXML
     ImageView img;
     @FXML
-    ListView<CBNVModule> list;
+    ListView<NhanVien> list;
     @FXML
     Text id, lopcntitle;
     @FXML
@@ -81,7 +73,7 @@ public class CBNV implements Initializable {
         ds = cbdao.getDSCB();
         list.getItems().setAll(ds);
         search.setPromptText("Tìm trong " + ds.size() + " CBNV.");
-        for (CBNVModule cb : ds) {
+        for (NhanVien cb : ds) {
             File f = new File("D:\\Projects\\IntelliJ\\QuanLyMamNon\\Project\\MNHP\\src\\main\\resources\\hp\\mnhp\\IMG\\" + cb.getIdCBNV() + ".jpg");
             if (f.exists()) {
                 cb.setImg(new Image(getClass().getResourceAsStream("IMG/" + cb.getIdCBNV() + ".jpg")));
@@ -183,7 +175,7 @@ public class CBNV implements Initializable {
     @FXML
     void onClickluuBtn() {
 
-        CBNVModule c = list.getSelectionModel().getSelectedItem();
+        NhanVien c = list.getSelectionModel().getSelectedItem();
         boolean i = cbdao.updateCBNV(c.getIdCBNV(), quyen.getSelectionModel().getSelectedItem().getId(), editpw.getText(), hoten.getText(), cv.getSelectionModel().getSelectedItem().getId(), noisinh.getText(), tn.getText(), hsl.getText(), dc.getText(), sdt.getText(), email.getText(), date.getValue(), cccd.getText(), tt.getSelectionModel().getSelectedItem().getId(), gt.getSelectionModel().getSelectedItem().toString(), lopcn.getSelectionModel().getSelectedItem().getId(), bd.getValue(), tdhv.getText());
         if (i) {
             ds = new CBNVDao().getDSCB();
@@ -215,7 +207,7 @@ public class CBNV implements Initializable {
         setEditable(true);
     }
 
-    void setField(CBNVModule cb) {
+    void setField(NhanVien cb) {
         if (!PickAFile.isExisted(cb.getIdCBNV())) {
             int random = 0 + (int) ((3 - 0 + 1) * Math.random());
             String url = link.get(random);
@@ -297,15 +289,14 @@ public class CBNV implements Initializable {
     }
 
     void select() {
-        if (lastIndex == -1)
-            lastIndex = 0;
-        CBNVModule cb = list.getItems().get(lastIndex);
+        if (lastIndex == -1) lastIndex = 0;
+        NhanVien cb = list.getItems().get(lastIndex);
         if (cb != null) {
             list.getSelectionModel().select(lastIndex);
             list.getFocusModel().focus(lastIndex);
             setField(cb);
         } else {
-            CBNVModule cb1 = new CBNVModule();
+            NhanVien cb1 = new NhanVien();
             setField(cb1);
         }
     }
@@ -330,7 +321,7 @@ public class CBNV implements Initializable {
         cv.getItems().setAll(linhtinh.dschv);
         lopcn.getItems().setAll(linhtinh.dsl);
         list.getItems().setAll(ds);
-        ListViewSkin<CBNVModule> skin = new ListViewSkin<>(list);
+        ListViewSkin<NhanVien> skin = new ListViewSkin<>(list);
         link.add("UI/teacher.png");
         link.add("UI/teacher1.png");
         link.add("UI/teacher2.png");
@@ -342,12 +333,14 @@ public class CBNV implements Initializable {
             quyen.setDisable(false);
             lopcn.setDisable(false);
         }
-        for (CBNVModule cb : ds) {
+
+        for (NhanVien cb : ds) {
             File f = new File("D:\\Projects\\IntelliJ\\QuanLyMamNon\\Project\\MNHP\\src\\main\\resources\\hp\\mnhp\\IMG\\" + cb.getIdCBNV() + ".jpg");
             if (f.exists()) {
                 cb.setImg(new Image(getClass().getResourceAsStream("IMG/" + cb.getIdCBNV() + ".jpg")));
             }
         }
+
         list.setOnMouseClicked(new EventHandler<javafx.scene.input.MouseEvent>() {
             @Override
             public void handle(javafx.scene.input.MouseEvent event) {
@@ -360,19 +353,10 @@ public class CBNV implements Initializable {
         sBtn.setOnMouseClicked(new EventHandler<javafx.scene.input.MouseEvent>() {
             @Override
             public void handle(javafx.scene.input.MouseEvent event) {
-                if (search.getText() != null || !search.getText().toString().isEmpty()) {
-                    List<CBNVModule> dstk = new ArrayList<>();
-                    for (CBNVModule scb : ds) {
-                        if (scb.getHoten().toLowerCase().contains(search.getText().trim().toLowerCase())) {
-                            dstk.add(scb);
-                        }
-                    }
+                List<NhanVien> dstk = TimKiembangTen(search.getText().toString(), ds);
+                if (dstk != null) {
                     list.getItems().setAll(dstk);
-                } else {
-                    list.getItems().setAll(ds);
-                }
-
-
+                } else list.getItems().setAll(ds);
             }
         });
 
@@ -407,7 +391,7 @@ public class CBNV implements Initializable {
             @Override
             public void handle(MouseEvent event) {
                 if (User.idQuyen.equals("0") || User.idCBNV.equals(list.getSelectionModel().getSelectedItem().getIdCBNV())) {
-                    CBNVModule cb = list.getSelectionModel().getSelectedItem();
+                    NhanVien cb = list.getSelectionModel().getSelectedItem();
                     FileDialog dialog = new FileDialog((Frame) null, "Select File to Open");
                     dialog.setMode(FileDialog.LOAD);
                     dialog.setVisible(true);
@@ -432,6 +416,99 @@ public class CBNV implements Initializable {
             }
         });
     }
+
+    /**********chon1************/
+//    private List<CBNVModule> TimbangHoten(String keyWord, List<CBNVModule> ds) {
+//        List<CBNVModule> dstk = new ArrayList<>();
+//        if (!keyWord.isEmpty()) {
+//            for (CBNVModule cb : ds) {
+//                if (cb.getHoten().toLowerCase().contains(keyWord.trim().toLowerCase())) {
+//                    dstk.add(cb);
+//                }
+//            }
+//        } else {
+//            dstk = ds;
+//        }
+//        return dstk;
+//    }
+    private List<NhanVien> TimbangHoten(String keyWord, List<NhanVien> ds) {
+        if (keyWord.isBlank()) {
+            AlertMessage.errorBox("Không để trống input");
+            return null;
+        }
+        if (keyWord.matches(".*\\d.*")) {
+            AlertMessage.errorBox("Họ Tên không thể chứa số");
+            return null;
+        }
+
+        keyWord = keyWord.trim().toLowerCase();
+        List<NhanVien> dstk = new ArrayList<>();
+        for (NhanVien nv : ds)
+            if (nv.getHoten().toLowerCase().contains(keyWord)) dstk.add(nv);
+        return dstk;
+    }
+
+
+    /**********chon1************/
+
+//    private void TimKiembangHoten(String keyWord) {
+//        List<CBNVModule> dstk = new ArrayList<>();
+//        boolean laHopLe = true;
+//        if (keyWord.matches(".*\\d.*")) {
+//            AlertMessage.errorBox("Họ Tên không thể chứa số");
+//            laHopLe = false;
+//        }
+//        if (keyWord.isBlank() == false && laHopLe == true) {
+//            for (CBNVModule scb : ds) {
+//                if (scb.getHoten().toLowerCase().contains(keyWord.trim().toLowerCase()))
+//                    dstk.add(scb);
+//            }
+//        }
+//        list.getItems().setAll(dstk);
+//    }
+    private List<NhanVien> TimKiembangTen(String keyWord, List<NhanVien> ds) {
+        boolean laHopLe = true;
+        if (keyWord.isBlank()) {
+            AlertMessage.errorBox("Không để trống");
+            laHopLe = false;
+        } else {
+            keyWord = keyWord.trim().toLowerCase();
+            if (keyWord.matches(".*\\d.*")) {
+                AlertMessage.errorBox("Tên không thể chứa số");
+                laHopLe = false;
+            }
+            if (keyWord.length() > 10) {
+                AlertMessage.errorBox("Tên nhập không quá 10 kí tự");
+                laHopLe = false;
+            }
+            for (int i = 0; i < keyWord.length(); i++) {
+                char ch = keyWord.charAt(i);
+                if (Character.isDigit(ch) == false && Character.isLetter(ch) == false && Character.isWhitespace(ch) == false) {
+                    AlertMessage.errorBox("Tên không thể chứa ký tự đặc biệt");
+                    laHopLe = false;
+                    break;
+                }
+            }
+        }
+        if (laHopLe == true) {
+            List<NhanVien> dstk = new ArrayList<>();
+            for (int i = 0; i < ds.size(); i++) {
+                NhanVien nv = ds.get(i);
+                String[] HoTenNV = nv.getHoten().split(" ");
+                String TenNV = (HoTenNV[HoTenNV.length - 1]);
+                if (TenNV.toLowerCase().contains(keyWord)) {
+                    dstk.add(nv);
+                }
+            }
+            AlertMessage.infoBox("Tìm kiếm xong", null);
+            return dstk;
+        } else {
+            AlertMessage.errorBox("Tìm kiếm thất bại");
+            return null;
+        }
+    }
+
+    /**********chon1************/
 
     private void loadIMG(String id) {
         String url = "/IMG/" + id + ".jpg";

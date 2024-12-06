@@ -3,6 +3,7 @@ package hp.mnhp;
 import DAO.DbHelper;
 import DAO.hsDao;
 import DAO.linhtinhDao;
+import Interface.IButtonTypeListener;
 import Model.*;
 import atlantafx.base.theme.CupertinoLight;
 import javafx.application.Platform;
@@ -30,9 +31,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class BangTTHS implements Initializable {
+public class BangTTHS extends Dialog implements Initializable, IButtonTypeListener {
+    public static String result;
     linhtinhDao linhtinh = new linhtinhDao();
     hsDao hdao = new hsDao();
+    static Dialog dialog;
+
+    static void setDialog(Dialog dialog1) {
+        dialog = dialog1;
+    }
+
     @FXML
     AnchorPane ap;
     @FXML
@@ -122,56 +130,66 @@ public class BangTTHS implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         linhtinh.load();
         lopds.getItems().setAll(linhtinh.dsl);
-        hsModel newHs = new hsModel();
         tt.getItems().setAll("Đang theo học", "Không đang theo học");
         gt.getItems().setAll("Nam", "Nữ");
         dhds.getItems().setAll(linhtinh.dsdh);
         ngs.setConverter(linhtinh.datePickerFormatter(ngs));
+
+        /**********chon1************/
         if (User.idChucVu.equals("gv")) {
             for (LopModel l : lopds.getItems()) {
                 if (l.getId() != null && l.getId().equals(User.idLop)) {
                     lopds.getSelectionModel().select(l);
-                    System.out.println(lopds.getSelectionModel().getSelectedItem().getTenLop());
                     break;
                 }
             }
             lopds.setDisable(true);
         }
+        /**********chon1************/
+
         luuBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(javafx.scene.input.MouseEvent event) {
-                try {
-                    newHs.setIdLop(lopds.getSelectionModel().getSelectedItem().getId() != null ? lopds.getSelectionModel().getSelectedItem().getId() : "NULL");
-                    newHs.setHoten(hoten.getText());
-                    newHs.setNoisinh(noisinh.getText());
-                    newHs.setNgaysinh(ngs.getValue());
-                    newHs.setDiachi(dc.getText());
-                    newHs.setIdLop(lopds.getSelectionModel().getSelectedItem().getId());
-                    newHs.setNamnhaphoc(nnh.getText());
-                    newHs.setDangtheohoc(tt.getSelectionModel().getSelectedItem().equals("Đang theo học"));
-                    newHs.setLanam(gt.getSelectionModel().getSelectedItem().equals("Nam"));
-                    newHs.setPh(phtable.getItems());
-                    if (hdao.themHS(newHs)) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setHeaderText("Thanh cong");
-                        alert.showAndWait();
-                        ap.getScene().getWindow().hide();
-
-
-                    } else {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setHeaderText("Khong Thanh cong");
-                        alert.showAndWait();
-
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setHeaderText("Khong Thanh cong");
-                    alert.showAndWait();
-                }
-
+            public void handle(MouseEvent event) {
+                onButtonOK();
             }
         });
+    }
+
+    @Override
+    public void onButtonOK() {
+        try {
+            hsModel newHs = new hsModel();
+            newHs.setIdLop(lopds.getSelectionModel().getSelectedItem().getId() != null ? lopds.getSelectionModel().getSelectedItem().getId() : "NULL");
+            newHs.setHoten(hoten.getText());
+            newHs.setNoisinh(noisinh.getText());
+            newHs.setNgaysinh(ngs.getValue());
+            newHs.setDiachi(dc.getText());
+            newHs.setIdLop(lopds.getSelectionModel().getSelectedItem().getId());
+            newHs.setNamnhaphoc(nnh.getText());
+            newHs.setDangtheohoc(tt.getSelectionModel().getSelectedItem().equals("Đang theo học"));
+            newHs.setLanam(gt.getSelectionModel().getSelectedItem().equals("Nam"));
+            newHs.setPh(phtable.getItems());
+            System.out.println(newHs.getId());
+            if (hdao.themHS(newHs)) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("Thanh cong");
+                alert.showAndWait();
+                ap.getScene().getWindow().hide();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("Khong Thanh cong");
+                alert.showAndWait();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Khong Thanh cong");
+            alert.showAndWait();
+        }
+    }
+
+    @Override
+    public void onButtonCancel() {
+
     }
 }

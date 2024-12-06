@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class HS implements Initializable {
@@ -67,12 +68,22 @@ public class HS implements Initializable {
     @FXML
     void setThemhsbtn() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("BangTTHS.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("Thêm Trẻ");
-            stage.setScene(new Scene(root));
-            stage.getScene().getStylesheets().add(new CupertinoLight().getUserAgentStylesheet());
-            stage.show();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("BangTTHS.fxml"));
+            Parent root = loader.load();
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.getDialogPane().setContent(root);
+            dialog.getDialogPane().getStylesheets().add(new CupertinoLight().getUserAgentStylesheet());
+            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+            BangTTHS ctrl = loader.getController();
+            Optional<ButtonType> result = dialog.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                System.out.println("Người dùng đã chọn OK.");
+                reload();
+            } else {
+                System.out.println("Người dùng đã chọn Cancel hoặc đóng dialog.");
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -132,6 +143,9 @@ public class HS implements Initializable {
         nnh.setText(hs.getNamnhaphoc());
         ngs.setValue(hs.getNgaysinh());
         suaBtn.setDisable(true);
+
+        /**********chon2************/
+
         if (User.idQuyen.equals("0")) {
             suaBtn.setDisable(false);
             xoabtn.setDisable(false);
@@ -155,6 +169,8 @@ public class HS implements Initializable {
                 }
             }
         }
+        /**********chon2************/
+
         gt.getItems().setAll("Nam", "Nữ");
         if (hs.isLanam()) {
             gt.setValue("Nam");

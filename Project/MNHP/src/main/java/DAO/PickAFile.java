@@ -1,20 +1,14 @@
 package DAO;
 
-import Model.CBNVModule;
-import javafx.scene.image.Image;
-import javafx.stage.FileChooser;
-import javafx.stage.Popup;
+import Model.NhanVien;
 import org.apache.commons.io.FileUtils;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class PickAFile {
-    public static void upIMG(CBNVModule cb) {
+    public static void upIMG(NhanVien cb) {
         FileDialog dialog = new FileDialog((Frame) null, "Select File to Open");
         dialog.setMode(FileDialog.LOAD);
         dialog.setVisible(true);

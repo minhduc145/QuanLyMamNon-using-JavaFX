@@ -1,6 +1,6 @@
 package DAO;
 
-import Model.CBNVModule;
+import Model.NhanVien;
 import javafx.scene.control.Alert;
 
 import java.sql.Connection;
@@ -12,39 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CBNVDao {
-    //    public boolean themNV(CBNVModule e) {
-//        boolean i = false;
-//        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-//        alert.setHeaderText("Xác nhận xóa");
-//        alert.showAndWait();
-//        if (alert.getResult().getButtonData().isDefaultButton()) {
-//
-//            try {
-//                Connection cn = (DbHelper.getInstance()).getConnection();
-//                String SQL = "delete from tre where idTre = ?";
-//                PreparedStatement stmt = cn.prepareStatement(SQL);
-//                stmt.setString(1, id);
-//                stmt.executeUpdate();
-//                i = true;
-//            } catch (Exception e) {
-//
-//                i = false;
-//            }
-//            if (i == true) {
-//                alert = new Alert(Alert.AlertType.INFORMATION);
-//                alert.setHeaderText("Xoa Thanh cong");
-//                alert.showAndWait();
-//            } else {
-//                alert = new Alert(Alert.AlertType.ERROR);
-//                alert.setHeaderText("Xoa khong Thanh cong");
-//                alert.showAndWait();
-//            }
-//
-//        }
-//
-//        return i;
-//
-//    }
+
     public boolean xoaNV(String id) {
         boolean i = false;
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -74,16 +42,59 @@ public class CBNVDao {
         }
         return i;
     }
+    public List<NhanVien> getGVchuacoLop() {
+        List<NhanVien> ds = new ArrayList<>();
+        try {
+            Connection cn = (DbHelper.getInstance()).getConnection();
+            String SQL = "SELECT CBNV.idCBNV, CBNV.HoTen, CBNV.idChucVu, CBNV.NoiSinh,  CBNV.DiaChiTT, CBNV.SDT, CBNV.Email, CBNV.NgayVaoLam, CBNV.SoCCCD, CBNV.idTinhTrang, CBNV.GioiTinhNam, CBNV.idLop, TaiKhoan.MatKhau, \n" + "                  TaiKhoan.idQuyen, CBNV.NgaySinh, CBNV.TrinhDoHocVan, CBNV.HSL, CBNV.PCTN\n" + "FROM     CBNV LEFT OUTER JOIN\n" + "                  TaiKhoan ON CBNV.idCBNV = TaiKhoan.idCBNV\n";
+            SQL+= "Where CBNV.idLop is NULL and CBNV.idChucVu = 'gv'";
 
-    public List<CBNVModule> getDSCB() {
-        List<CBNVModule> ds = new ArrayList<>();
+            PreparedStatement stmt = cn.prepareStatement(SQL);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                NhanVien cb = new NhanVien();
+                cb.setIdCBNV(rs.getString("idcbnv"));
+                cb.setHoten(rs.getString(2));
+                cb.setIdChucVu(rs.getString(3));
+                cb.setNoiSinh(rs.getString(4));
+                cb.setDiaChiTT(rs.getString(5));
+                cb.setSDT(rs.getString(6));
+                cb.setEmail(rs.getString(7));
+                if (rs.getDate(8) != null) {
+                    LocalDate newDate = rs.getDate(8).toLocalDate();
+                    cb.setNgayVaoLam(newDate);
+                }
+                cb.setSoCCCD(rs.getString(9));
+                cb.setIdTinhTrang(rs.getString(10));
+                cb.setGTNam(rs.getBoolean(11));
+                cb.setIdLop(rs.getString(12));
+                cb.setMatKhau(rs.getString(13));
+                cb.setIdQuyen(rs.getString(14));
+                if (rs.getDate(15) != null) {
+                    LocalDate newDate2 = rs.getDate(15).toLocalDate();
+                    cb.setNgaySinh(newDate2);
+                }
+                cb.setTDHV(rs.getString(16));
+                cb.setHsl(rs.getDouble(17));
+                cb.setPctn(rs.getDouble(18));
+                ds.add(cb);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ds;
+    }
+
+    public List<NhanVien> getDSCB() {
+        List<NhanVien> ds = new ArrayList<>();
         try {
             Connection cn = (DbHelper.getInstance()).getConnection();
             String SQL = "SELECT CBNV.idCBNV, CBNV.HoTen, CBNV.idChucVu, CBNV.NoiSinh,  CBNV.DiaChiTT, CBNV.SDT, CBNV.Email, CBNV.NgayVaoLam, CBNV.SoCCCD, CBNV.idTinhTrang, CBNV.GioiTinhNam, CBNV.idLop, TaiKhoan.MatKhau, \n" + "                  TaiKhoan.idQuyen, CBNV.NgaySinh, CBNV.TrinhDoHocVan, CBNV.HSL, CBNV.PCTN\n" + "FROM     CBNV LEFT OUTER JOIN\n" + "                  TaiKhoan ON CBNV.idCBNV = TaiKhoan.idCBNV\n";
             PreparedStatement stmt = cn.prepareStatement(SQL);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                CBNVModule cb = new CBNVModule();
+                NhanVien cb = new NhanVien();
                 cb.setIdCBNV(rs.getString("idcbnv"));
                 cb.setHoten(rs.getString(2));
                 cb.setIdChucVu(rs.getString(3));
@@ -162,7 +173,7 @@ public class CBNVDao {
 
     public static void main(String[] args) {
         CBNVDao cb = new CBNVDao();
-        for (CBNVModule c : cb.getDSCB()) {
+        for (NhanVien c : cb.getDSCB()) {
             System.out.println(c.getIdLop());
         }
     }

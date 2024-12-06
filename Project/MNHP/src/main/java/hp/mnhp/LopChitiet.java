@@ -1,16 +1,14 @@
 package hp.mnhp;
 
 import DAO.*;
-import Model.CBNVModule;
+import Model.NhanVien;
 import Model.LopModel;
 import Model.User;
 import Model.hsModel;
-import atlantafx.base.controls.Message;
-import atlantafx.base.controls.Notification;
 import atlantafx.base.theme.CupertinoLight;
 import atlantafx.base.theme.Styles;
-import atlantafx.base.util.Animations;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -20,24 +18,21 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxListCell;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.skin.ListViewSkin;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,13 +44,17 @@ public class LopChitiet implements Initializable {
     LopModel lastObj = null;
     LopDao ldao = new LopDao();
     hsDao hdao = new hsDao();
+    CBNVDao nvdao = new CBNVDao();
     List<LopModel> dslop = ldao.getDSLop();
+    List<NhanVien> dsGVchuaCoLop = new ArrayList<>();
+
+
     @FXML
     AnchorPane ap;
     @FXML
     ListView<LopModel> list;
     @FXML
-    Button chs, addtoclass, delfromclass, themlop, xoalop, suaBtn, luuBtn, huyBtn, sBtn, reload;
+    Button btnMoThem, btnOK, chs, addtoclass, delfromclass, themlop, xoalop, suaBtn, luuBtn, huyBtn, sBtn, reload;
     @FXML
     TextField txttenlop, search;
     @FXML
@@ -65,10 +64,71 @@ public class LopChitiet implements Initializable {
     @FXML
     TableView<hsModel> hstab;
     @FXML
-    TableColumn cotid, ch, stths, hths, nshs, gths, sttgv, htgv, tkgv, nsgv;
+    TableColumn gvch, cotid, ch, stths, hths, nshs, gths, sttgv, htgv, tkgv, nsgv;
     @FXML
-    TableView<CBNVModule> gvtab;
+    TableView<NhanVien> gvtab;
 
+    void setGVCN(String idlop, TableView<NhanVien> GVCNTable) {
+        List<NhanVien> dsChon = new ArrayList<>();
+        List<NhanVien> dsKhongChon = new ArrayList<>();
+        List<NhanVien> tableList = GVCNTable.getItems();
+        // lọc gv được chọn và không được chọn
+        for (int i = 0; i < tableList.size(); i++) {
+            NhanVien nv = tableList.get(i);
+            if (nv.getSelect().isSelected()) dsChon.add(nv);
+            else dsKhongChon.add(nv);
+        }
+        /// kiểm tra số lượng giáo viên được chọn
+        if (dsChon.size() < 1) {
+            AlertMessage.errorBox("Lỗi! Cần có ít nhất 1 GVCN");
+        } else if (dsChon.size() > 3) {
+            AlertMessage.errorBox("Lỗi! tối đa không quá 3 GVCN");
+        } else {
+            Connection cn = (DbHelper.getInstance()).getConnection();
+            try {
+                for (int i = 0; i < dsKhongChon.size(); i++) { /// bỏ gv không dc chọn ra khỏi lớp
+                    NhanVien nv = dsKhongChon.get(i);
+                    String SQL = String.format("update CBNV set idLop = NULL where idCBNV = '%s'", nv.getIdCBNV());
+                    cn.prepareStatement(SQL).executeUpdate();
+                }
+                for (int i = 0; i < dsChon.size(); i++) { /// đặt gv dc chọn chủ nhiệm lớp
+                    NhanVien nv = dsChon.get(i);
+                    String SQL = String.format("update CBNV set idLop = '%s' where idCBNV = '%s'", idlop, nv.getIdCBNV());
+                    cn.prepareStatement(SQL).executeUpdate();
+                }
+            } catch (Exception e) {
+                AlertMessage.errorBox("Lỗi không xđ: " + e.getMessage());
+                return;
+            }
+            AlertMessage.infoBox("Phân lớp cho GVCN thành công", "Xong");
+
+        }
+    }
+
+
+    void setThemGVCN(boolean i) {
+        btnMoThem.setVisible(!i);
+        btnOK.setVisible(i);
+        suaBtn.setVisible(!i);
+        gvch.setVisible(i);
+        list.setDisable(i);
+    }
+
+    @FXML
+    void onclickMoThem() {
+        i = list.getSelectionModel().getSelectedIndex();
+        setThemGVCN(true);
+        dsGVchuaCoLop = nvdao.getGVchuacoLop();
+        gvtab.getItems().addAll(dsGVchuaCoLop);
+    }
+
+    @FXML
+    void onclickOKbtn() {
+        setThemGVCN(false);
+        setGVCN(list.getItems().get(i).getId(), gvtab);
+        dsGVchuaCoLop = nvdao.getGVchuacoLop();
+        setReload();
+    }
 
     @FXML
     void onClicklogout() {
@@ -133,6 +193,8 @@ public class LopChitiet implements Initializable {
     @FXML
     void onClickSuaBtn() {
         i = list.getSelectionModel().getSelectedIndex();
+
+        chs.setVisible(true);
         list.setDisable(true);
         tenlop.setVisible(false);
         txttenlop.setVisible(true);
@@ -146,7 +208,7 @@ public class LopChitiet implements Initializable {
 
     @FXML
     void onClickLuuBtn() {
-        if (AlertMessage.iscfBox(null, "Xác nhận lưu", "Xác nhận lưu")) {
+        if (AlertMessage.isConfirmedBox(null, "Xác nhận lưu", "Xác nhận lưu")) {
             try {
                 ldao.updateLop(list.getSelectionModel().getSelectedItem().getId(), idlop.getText().toString(), txttenlop.getText().toString());
             } catch (Exception e) {
@@ -167,6 +229,9 @@ public class LopChitiet implements Initializable {
                 AlertMessage.erBox(null, "Loi", "Lỗi xóa");
             }
         }
+        chs.setVisible(false);
+        setThemGVCN(false);
+
         list.setDisable(false);
         tenlop.setVisible(true);
         txttenlop.setVisible(false);
@@ -182,6 +247,8 @@ public class LopChitiet implements Initializable {
     @FXML
     void onClickHuyBtn() {
         setReload();
+        setThemGVCN(false);
+        chs.setVisible(false);
         list.setDisable(false);
         tenlop.setVisible(true);
         txttenlop.setVisible(false);
@@ -196,11 +263,15 @@ public class LopChitiet implements Initializable {
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        if (User.idQuyen.equals("0")) {
+        TableColumn<NhanVien, NhanVien> unfriendCol = new TableColumn<>("");
+        gvtab.getColumns().add(unfriendCol);
+        chs.setVisible(false);
+        if (User.idQuyen.equals("0") || User.idQuyen.equals("1")) {
             chs.setDisable(false);
             suaBtn.setDisable(false);
             themlop.setDisable(false);
             xoalop.setDisable(false);
+            btnMoThem.setDisable(false);
         }
         ap.sceneProperty().addListener((obs, oldScene, newScene) -> {
             Platform.runLater(() -> {
@@ -232,8 +303,13 @@ public class LopChitiet implements Initializable {
         list.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<LopModel>() {
             @Override
             public void changed(ObservableValue<? extends LopModel> observable, LopModel oldValue, LopModel newValue) {
+
+
                 LopModel lop = list.getSelectionModel().getSelectedItem();
+
                 if (lop != null) {
+                    dsGVchuaCoLop = nvdao.getGVchuacoLop();
+
                     if (!User.idQuyen.equals("0")) {
                         suaBtn.setDisable(true);
                         for (LopModel.GVCN cb : lop.getDsGVCN()) {
@@ -258,7 +334,7 @@ public class LopChitiet implements Initializable {
                     ch.setCellValueFactory(new PropertyValueFactory<hsModel, CheckBox>("select"));
                     cotid.setCellValueFactory(new PropertyValueFactory<hsModel, String>("id"));
                     hstab.getItems().setAll(hsl);
-                    List<CBNVModule> dsgv = new ArrayList<>();
+                    List<NhanVien> dsgv = new ArrayList<>();
                     try {
                         Connection cn = (DbHelper.getInstance()).getConnection();
                         String SQL = "SELECT *\n" + "FROM     CBNV\n" + "where idLop = ?";
@@ -266,23 +342,26 @@ public class LopChitiet implements Initializable {
                         stmt.setString(1, lop.getId());
                         ResultSet rs = stmt.executeQuery();
                         while (rs.next()) {
-                            CBNVModule h = new CBNVModule();
+                            NhanVien h = new NhanVien();
                             h.setHoten(rs.getString("hoten"));
                             h.setIdCBNV(rs.getString("idcbnv"));
                             if (rs.getDate("ngaysinh") != null) {
                                 LocalDate newDate2 = rs.getDate("ngaysinh").toLocalDate();
                                 h.setNgaySinh(newDate2);
                             }
+                            h.setSelect(true);
                             dsgv.add(h);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
                     sttgv.setSortable(false);
                     sttgv.setCellFactory(new LineNumbersCellFactory<>());
-                    htgv.setCellValueFactory(new PropertyValueFactory<CBNVModule, String>("hoten"));
-                    nsgv.setCellValueFactory(new PropertyValueFactory<CBNVModule, String>("NgaySinh"));
-                    tkgv.setCellValueFactory(new PropertyValueFactory<CBNVModule, String>("idCBNV"));
+                    htgv.setCellValueFactory(new PropertyValueFactory<NhanVien, String>("hoten"));
+                    nsgv.setCellValueFactory(new PropertyValueFactory<NhanVien, String>("NgaySinh"));
+                    tkgv.setCellValueFactory(new PropertyValueFactory<NhanVien, String>("idCBNV"));
+                    gvch.setCellValueFactory(new PropertyValueFactory<NhanVien, CheckBox>("select"));
                     gvtab.getItems().setAll(dsgv);
                 }
             }
@@ -298,8 +377,12 @@ public class LopChitiet implements Initializable {
                     stage.setTitle("Thêm Lớp");
                     stage.setScene(new Scene(root));
                     stage.setResizable(false);
+                    stage.initModality(Modality.APPLICATION_MODAL);
 //                    stage.getScene().getStylesheets().add(new CupertinoLight().getUserAgentStylesheet());
-                    stage.show();
+                    stage.showAndWait();
+                    if(ThemLop.result == true){
+                        setReload();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -309,7 +392,7 @@ public class LopChitiet implements Initializable {
         xoalop.setOnMouseClicked(new EventHandler<javafx.scene.input.MouseEvent>() {
             @Override
             public void handle(javafx.scene.input.MouseEvent event) {
-                if (AlertMessage.iscfBox(null, "Xác nhận xóa lớp ", "Xác nhận xóa lớp " + list.getSelectionModel().getSelectedItem().getTenLop())) {
+                if (AlertMessage.isConfirmedBox(null, "Xác nhận xóa lớp ", "Xác nhận xóa lớp " + list.getSelectionModel().getSelectedItem().getTenLop())) {
                     LopModel l = list.getSelectionModel().getSelectedItem();
                     try {
                         ldao.xoaLop(l);
@@ -333,16 +416,7 @@ public class LopChitiet implements Initializable {
             @Override
             public void handle(KeyEvent event) {
                 if (!txttenlop.getText().isEmpty()) {
-                    String newid = "";
-                    String[] splited = txttenlop.getText().toString().split("\\s+");
-                    for (String s : splited) {
-                        if (s.substring(0, 1).chars().allMatch(Character::isDigit)) {
-                            newid += s;
-                        } else {
-                            newid += s.substring(0, 1);
-                        }
-                    }
-                    idlop.setText(newid.toLowerCase());
+                    idlop.setText(txttenlop.getText().toString().replaceAll("\\s", "")); // id duoc tao tu dong tu ten lop moi
                 } else idlop.setText(null);
             }
         });
@@ -396,6 +470,7 @@ public class LopChitiet implements Initializable {
             }
         });
     }
+
 
     private List<hsModel> getdshs() {
         List<hsModel> hsl = new ArrayList<>();

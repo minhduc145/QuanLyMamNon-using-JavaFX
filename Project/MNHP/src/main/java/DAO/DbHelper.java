@@ -1,7 +1,10 @@
 package DAO;
 
 import Model.User;
+import atlantafx.base.theme.CupertinoLight;
+import hp.mnhp.AlertMessage;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -16,12 +19,13 @@ import java.util.Scanner;
 
 public class DbHelper {
     private static DbHelper instance = null;
+    public static String _db1 = null;
     private Connection cn = null;
 
     private DbHelper() {
 
         try {
-            String configFile = "jdbc:sqlserver://\\\\SQLEXPRESS:1433;databasename=MNHP;user=sa;password=123;trustServerCertificate=true";
+            String configFile = "jdbc:sqlserver://\\\\localhost:1433;"+_db1+";databasename=MNHP;trustServerCertificate=true;";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             String dbURL = configFile;
             cn = DriverManager.getConnection(dbURL);
@@ -41,6 +45,8 @@ public class DbHelper {
     public Connection getConnection() {
         return this.cn;
     }
+
+
 
     public boolean DangNhap(String usn, String psw) {
         try {

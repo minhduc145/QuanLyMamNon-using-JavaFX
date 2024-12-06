@@ -1,6 +1,5 @@
 package DAO;
 
-import Model.CBNVModule;
 import Model.LopModel;
 
 import java.sql.Connection;

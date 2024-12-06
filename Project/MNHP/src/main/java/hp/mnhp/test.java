@@ -26,5 +26,10 @@ public class test extends Application {
 
     public static void main(String[] args) {
         launch();
+//        String s = "1";
+//        System.out.println(s.matches(".*\\d.*"));
+//        System.out.println(s.matches(".*\\s.*"));
+
     }
+
 }

@@ -6,7 +6,6 @@ import Model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
@@ -18,13 +17,13 @@ import java.util.ResourceBundle;
 public class MyInfo implements Initializable {
     linhtinhDao linhtinh = new linhtinhDao();
     CBNVDao cbdao = new CBNVDao();
-    List<CBNVModule> ds = new ArrayList<>();
+    List<NhanVien> ds = new ArrayList<>();
     List<String> link = new ArrayList<>();
     int lastIndex;
 
 
     @FXML
-    ListView<CBNVModule> list;
+    ListView<NhanVien> list;
     @FXML
     Text id, lopcntitle;
     @FXML
@@ -47,7 +46,7 @@ public class MyInfo implements Initializable {
     @FXML
     DatePicker date, bd;
 
-    void setField(CBNVModule cb) {
+    void setField(NhanVien cb) {
 
         hsl.setText(Double.toString(cb.getHsl()));
         tdhv.setText(cb.getTDHV());

@@ -1,31 +1,21 @@
 package hp.mnhp;
 
 import DAO.DbHelper;
-import Model.CBNVModule;
 import Model.ChamCongModel;
 import DAO.chuyenNgay;
 import Model.User;
-import Model.hsModel;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -199,6 +189,7 @@ public class ChamCong1 implements Initializable {
                         stmt.setString(1, String.valueOf(namchon) + "-" + String.valueOf(thangchon) + "-" + String.valueOf(ch.getId()));
                         stmt.executeUpdate();
                     } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     try {
                         Connection cn = (DbHelper.getInstance()).getConnection();

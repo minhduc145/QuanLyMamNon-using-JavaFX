@@ -1,23 +1,17 @@
 package hp.mnhp;
 
 import DAO.DbHelper;
-import Model.CBNVModule;
 import Model.LopModel;
 import Model.hsModel;
-import atlantafx.base.theme.CupertinoLight;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
 
 import java.net.URL;
 import java.sql.Connection;
@@ -71,6 +65,7 @@ public class ThemHSvaoLop implements Initializable {
         ok.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(javafx.scene.input.MouseEvent event) {
+                /**********chon2************/
                 for (hsModel h : tab.getItems()) {
                     if (h.getSelect().isSelected()) {
                         try {
@@ -81,13 +76,15 @@ public class ThemHSvaoLop implements Initializable {
                             PreparedStatement stmt = cn.prepareStatement(SQL);
                             stmt.setString(1, _lopht.getId());
                             stmt.setString(2, h.getId());
-                            int i = stmt.executeUpdate();
+                            stmt.executeUpdate();
                             ok.getScene().getWindow().hide();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
                 }
+                /**********chon2************/
+
             }
         });
     }
